@@ -1,0 +1,17 @@
+[
+  {
+    "name": "${family}",
+    "image": "${image}",
+    "essential": true,
+    "cpu": ${cpu},
+    "memory": ${memory},
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/ecs/${name}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "${stream_prefix}"
+      }
+    }
+  }
+]
