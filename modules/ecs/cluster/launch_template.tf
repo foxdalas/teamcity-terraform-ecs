@@ -1,7 +1,7 @@
 resource "aws_launch_template" "node" {
   name_prefix            = "ECS_NODES_"
   image_id               = local.ami_id
-  instance_type          = "t3a.small"
+  instance_type          = local.instance_type
   vpc_security_group_ids = local.sg_ids
   key_name               = local.key_name
 

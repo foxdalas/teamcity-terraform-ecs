@@ -23,7 +23,7 @@ Terraform infrastrcture to run AWS ECS TeamCity Cluster
 | server_container_cpu | 2048 | number | TeamCity Server Request CPU |
 | server_container_memory | 3072 | number | TeamCity Server Request Memory |
 | server_container_data_dir | /data/teamcity_server/datadir | string | TeamCity Data Directory |
-|tagent_container_image | jetbrains/teamcity-agent:latest | string | TeamCity Agent Container image |
+| agent_container_image | jetbrains/teamcity-agent:latest | string | TeamCity Agent Container image |
 | agent_container_cpu | 2048 | number | TeamCity Agent Request CPU |
 | agent_container_memory | 3072 | number | TeamCity Agent Request Memory |
 | tags | - | map(string) | A map of tags to add to all resources |

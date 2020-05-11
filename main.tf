@@ -9,7 +9,7 @@ terraform {
 }
 
 resource "aws_key_pair" "main" {
-  key_name   = "${local.project_name}-${local.environment}"
+  key_name   = local.name
   public_key = file("~/.ssh/id_rsa.pub")
 
   tags = local.tags
@@ -19,7 +19,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 2.33.0"
 
-  name            = "${local.project_name}-${local.environment}"
+  name            = local.name
   cidr            = local.vpc_cidr
   azs             = local.vpc_azs
   private_subnets = local.vpc_private_subnets
@@ -35,10 +35,9 @@ module "vpc" {
 module "bastion" {
   source = "./modules/bastion"
 
-  name = "${local.project_name}-${local.environment}-bastion"
+  name = "${local.name}-bastion"
 
   vpc_id = module.vpc.vpc_id
-
   key_name  = aws_key_pair.main.key_name
   subnet_id = module.vpc.public_subnets.0
 
@@ -48,7 +47,7 @@ module "bastion" {
 module "efs" {
   source = "./modules/efs"
 
-  name                = "${local.project_name}-${local.environment}-efs"
+  name                = "${local.name}-efs"
   vpc_id              = module.vpc.vpc_id
   subnets_ids         = module.vpc.private_subnets
   trusted_cidr_blocks = module.vpc.private_subnets_cidr_blocks
@@ -58,16 +57,16 @@ module "efs" {
 
 
 module "alb" {
-  source = "./modules/alb"
+  source = "./modules/lb"
 
-  name   = "${local.project_name}-${local.environment}-lb"
+  name   = "${local.name}-lb"
   vpc_id = module.vpc.vpc_id
 
   public_subnets     = module.vpc.public_subnets
   target_cidr_blocks = module.vpc.private_subnets_cidr_blocks
   int_web_port       = 8111
   ext_web_port       = 80
-  health_check_path  = "/showAgreement.html" #Official workaround. Realy?
+  health_check_path  = "/"
 
   tags = local.tags
 }
@@ -75,9 +74,9 @@ module "alb" {
 module "ecs" {
   source = "./modules/ecs/cluster"
 
-  name         = "${local.project_name}-${local.environment}-ecs"
+  name         = "${local.name}-ecs"
   vpc_id       = module.vpc.vpc_id
-  cluster_name = "${local.project_name}-${local.environment}"
+  cluster_name = local.name
 
   asg_min_size = local.ecs_asg_min_size
   asg_max_size = local.ecs_asg_max_size
@@ -93,8 +92,8 @@ module "ecs" {
 module "server" {
   source = "./modules/ecs/server"
 
-  name          = "${local.project_name}-${local.environment}-server"
-  cluster_name  = "${local.project_name}-${local.environment}"
+  name          = "${local.name}-server"
+  cluster_name  = local.name
   task_role_arn = module.ecs.ecs_default_task_role_arn
 
   efs_filesystem_id         = module.efs.filesystem_id
@@ -115,7 +114,7 @@ module "server" {
 module "agent" {
   source = "./modules/ecs/agent"
 
-  name          = "${local.project_name}-${local.environment}-agent"
+  name          = "${local.name}-agent"
   task_role_arn = module.ecs.ecs_default_task_role_arn
 
   container_image  = local.agent_container_image

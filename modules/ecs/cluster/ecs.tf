@@ -26,4 +26,6 @@ resource "aws_ecs_capacity_provider" "asg" {
       target_capacity           = local.target_capacity
     }
   }
+
+  tags = local.tags
 }

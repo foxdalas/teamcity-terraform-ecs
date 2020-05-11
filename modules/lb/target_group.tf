@@ -1,4 +1,4 @@
-resource "aws_alb_target_group" "main" {
+resource "aws_lb_target_group" "main" {
   name     = "${local.name}-tg"
   port     = local.int_web_port
   protocol = "HTTP"
@@ -9,6 +9,7 @@ resource "aws_alb_target_group" "main" {
     interval          = "5"
     timeout           = "3"
     healthy_threshold = "2"
+    matcher           = "200,301,302"
 
   }
 

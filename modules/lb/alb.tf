@@ -1,4 +1,4 @@
-resource "aws_alb" "main" {
+resource "aws_lb" "main" {
   name            = local.name
   internal        = local.internal
   security_groups = [aws_security_group.main.id]

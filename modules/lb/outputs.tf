@@ -2,9 +2,9 @@
 # Module Outputs
 # --------------
 output "target_group" {
-  value = aws_alb_target_group.main
+  value = aws_lb_target_group.main
 }
 
 output "dns_name" {
-  value = aws_alb.main.dns_name
+  value = aws_lb.main.dns_name
 }

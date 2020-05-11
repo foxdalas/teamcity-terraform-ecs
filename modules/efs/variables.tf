@@ -29,6 +29,11 @@ variable "performance_mode" {
   default     = "maxIO"
 }
 
+variable "throughput_mode" {
+  description = "hroughput mode for the file system"
+  default     = "bursting"
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -42,6 +47,8 @@ locals {
   subnets_ids         = var.subnets_ids
   trusted_cidr_blocks = var.trusted_cidr_blocks
   performance_mode    = var.performance_mode
+  throughput_mode     = var.throughput_mode
+
   tags = merge(
     {
       "Name" = format("%s", local.name)

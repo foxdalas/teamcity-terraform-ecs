@@ -101,6 +101,8 @@ variable "tags" {
 }
 
 locals {
+  name = "${var.project_name}-${var.environment}"
+
   project_name  = var.project_name
   environment   = var.environment
   log_retention = var.log_retention
