@@ -37,7 +37,7 @@ module "bastion" {
 
   name = "${local.name}-bastion"
 
-  vpc_id = module.vpc.vpc_id
+  vpc_id    = module.vpc.vpc_id
   key_name  = aws_key_pair.main.key_name
   subnet_id = module.vpc.public_subnets.0
 

@@ -5,15 +5,26 @@
     "command": [
       "/bin/bash",
       "-c",
-      "mkdir -p ${container_path}/config && echo \"${database_config}\" > /${container_path}/config/database.properties && /run-services.sh"
+      "mkdir -p ${container_path}/system && ln -sf /caches ${container_path}/system/caches && mkdir -p ${container_path}/config && echo \"${database_config}\" > /${container_path}/config/database.properties && /run-services.sh"
     ],
     "environment" : [
-      { "name" : "TEAMCITY_SERVER_MEM_OPTS", "value": "-Xmx3g -XX:ReservedCodeCacheSize=350m"}
+      {
+        "name" : "TEAMCITY_SERVER_MEM_OPTS",
+        "value": "-Xmx3g -XX:ReservedCodeCacheSize=350m"
+      },
+      {
+        "name" : "TEAMCITY_DATA_PATH",
+        "value": "${container_path}"
+      }
     ],
     "mountPoints": [
       {
         "sourceVolume": "${volume_name}",
         "containerPath": "${container_path}"
+      },
+      {
+        "sourceVolume": "cache-volume",
+        "containerPath" : "/caches"
       }
     ],
     "essential": true,

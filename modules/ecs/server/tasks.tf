@@ -5,6 +5,9 @@ resource "aws_ecs_task_definition" "server" {
   task_role_arn = local.task_role_arn
 
   volume {
+    name = "cache-volume"
+  }
+  volume {
     name = "data-volume"
     efs_volume_configuration {
       file_system_id = local.efs_filesystem_id

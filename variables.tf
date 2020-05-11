@@ -72,7 +72,7 @@ variable "server_container_memory" {
 
 variable "server_container_data_dir" {
   description = "TeamCity Data Directory is the directory on the file system used by TeamCity server to store configuration settings, build results and current operation files"
-  default     = "/data/teamcity_server/datadir"
+  default     = "/data"
   type        = string
 }
 
