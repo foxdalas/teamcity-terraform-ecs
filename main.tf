@@ -66,7 +66,7 @@ module "alb" {
   target_cidr_blocks = module.vpc.private_subnets_cidr_blocks
   int_web_port       = 8111
   ext_web_port       = 80
-  health_check_path  = "/"
+  health_check_path  = "/showAgreement.html" #Official workaround. Realy?
 
   tags = local.tags
 }
