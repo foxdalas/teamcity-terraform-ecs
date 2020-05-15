@@ -89,7 +89,7 @@ Result
 * ~~CloudWatch Logs~~
 * ~~Run TeamCity Server with EFS volume~~
 * ~~Run TeamCity Agents~~
-* Download Plugins when is first run
+* ~~Download Plugins when is first run~~
 
 ## Hacks
 * ~~Write InitContainer analog for plugin download and watch configuration~~
