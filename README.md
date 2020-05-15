@@ -21,7 +21,7 @@ Terraform infrastrcture to run AWS ECS TeamCity Cluster
 | ecs_asg_max_size | 5 | number | ECS ASG Maximal size |
 | server_container_image | jetbrains/teamcity-server:latest | string | TeamCity Server Container image |
 | server_container_cpu | 2048 | number | TeamCity Server Request CPU |
-| server_container_memory | 3072 | number | TeamCity Server Request Memory |
+| server_container_memory | 3584 | number | TeamCity Server Request Memory |
 | server_container_data_dir | /data/teamcity_server/datadir | string | TeamCity Data Directory |
 | agent_container_image | jetbrains/teamcity-agent:latest | string | TeamCity Agent Container image |
 | agent_container_cpu | 2048 | number | TeamCity Agent Request CPU |
@@ -92,4 +92,5 @@ Result
 * Download Plugins when is first run
 
 ## Hacks
-* Write InitContainer analog for plugin download and watch configuration
+* ~~Write InitContainer analog for plugin download and watch configuration~~
+* ~~https://github.com/terraform-providers/terraform-provider-aws/issues/11409~~

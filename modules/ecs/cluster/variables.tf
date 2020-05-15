@@ -52,7 +52,7 @@ variable "target_capacity" {
 
 variable "asg_min_size" {
   description = "ECS EC2 Nodes ASG Minimal size"
-  default     = 1
+  default     = 0
   type        = number
 }
 

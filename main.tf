@@ -81,7 +81,7 @@ module "ecs" {
   asg_min_size = local.ecs_asg_min_size
   asg_max_size = local.ecs_asg_max_size
 
-  instance_type       = "t3.medium"
+  instance_type       = "t3a.medium"
   trusted_cidr_blocks = module.vpc.public_subnets_cidr_blocks
   subnets_ids         = module.vpc.private_subnets
   key_name            = aws_key_pair.main.key_name
@@ -92,9 +92,10 @@ module "ecs" {
 module "server" {
   source = "./modules/ecs/server"
 
-  name          = "${local.name}-server"
-  cluster_name  = local.name
-  task_role_arn = module.ecs.ecs_default_task_role_arn
+  name             = "${local.name}-server"
+  cluster_name     = local.name
+  service_role_arn = module.ecs.ecs_service_role_name
+  task_role_arn    = module.ecs.ecs_default_task_role_arn
 
   efs_filesystem_id         = module.efs.filesystem_id
   efs_filesystem_mount_path = local.server_container_data_dir

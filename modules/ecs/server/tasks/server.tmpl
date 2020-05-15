@@ -5,26 +5,26 @@
     "command": [
       "/bin/bash",
       "-c",
-      "mkdir -p ${container_path}/system && ln -sf /caches ${container_path}/system/caches && mkdir -p ${container_path}/config && echo \"${database_config}\" > /${container_path}/config/database.properties && /run-services.sh"
+      "mkdir -p ${container_path}/system && ln -sf ${cache_volume_path} ${container_path}/system/caches && mkdir -p ${container_path}/config && echo \"${database_config}\" > ${container_path}/config/database.properties && /run-services.sh"
     ],
     "environment" : [
       {
         "name" : "TEAMCITY_SERVER_MEM_OPTS",
-        "value": "-Xmx3g -XX:ReservedCodeCacheSize=350m"
+        "value": "${mem_opts}"
       },
       {
         "name" : "TEAMCITY_DATA_PATH",
-        "value": "${container_path}"
+        "value": "${data_volume_path}"
       }
     ],
     "mountPoints": [
       {
-        "sourceVolume": "${volume_name}",
-        "containerPath": "${container_path}"
+        "sourceVolume": "${data_volume_name}",
+        "containerPath": "${data_volume_path}"
       },
       {
-        "sourceVolume": "cache-volume",
-        "containerPath" : "/caches"
+        "sourceVolume": "${cache_volume_name}",
+        "containerPath" : "${cache_volume_path}"
       }
     ],
     "essential": true,
@@ -32,11 +32,44 @@
     "memory": ${memory},
     "portMappings": [
       {
-        "hostPort": 8111,
-        "containerPort": 8111,
+        "hostPort": ${host_port},
+        "containerPort": ${container_port},
         "protocol": "tcp"
       }
     ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/ecs/${name}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "${stream_prefix}"
+      }
+    }
+  },
+  {
+    "name": "${family}-init",
+    "image": "foxdalas/tc-plugins-downloader:latest",
+    "memory": 128,
+    "command": [
+      "/app/plugins.sh"
+    ],
+    "environment" : [
+      {
+        "name" : "PLUGINS_DIR",
+        "value": "${data_volume_path}/plugins"
+      },
+      {
+        "name" : "PLUGINS_LIST",
+        "value": "${plugins_list}"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "${data_volume_name}",
+        "containerPath": "${data_volume_path}"
+      }
+    ],
+    "essential": false,
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {

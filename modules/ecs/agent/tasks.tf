@@ -4,6 +4,7 @@ resource "aws_ecs_task_definition" "agent" {
   family        = local.name
   task_role_arn = local.task_role_arn
 
+
   container_definitions = templatefile("${path.module}/tasks/agent.tmpl", {
     # Container configuration
     name   = local.name

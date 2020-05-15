@@ -42,7 +42,7 @@ variable "vpc_private_subnets" {
 
 variable "ecs_asg_min_size" {
   description = "ECS ASG Minimal size"
-  default     = 2
+  default     = 0
   type        = number
 }
 
@@ -66,7 +66,7 @@ variable "server_container_cpu" {
 
 variable "server_container_memory" {
   description = "TeamCity Server Request Memory"
-  default     = "3072"
+  default     = "3584"
   type        = number
 }
 

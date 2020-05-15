@@ -42,8 +42,8 @@ variable "capacity_provider" {
 
 variable "log_retention" {
   description = "Log retention (days)"
-  default     = 1
   type        = number
+  default     = 1
 }
 
 
@@ -56,7 +56,6 @@ locals {
   container_image  = var.container_image
   container_cpu    = var.container_cpu
   container_memory = var.container_cpu
-
 
   capacity_provider = var.capacity_provider
 

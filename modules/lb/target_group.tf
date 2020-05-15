@@ -4,6 +4,8 @@ resource "aws_lb_target_group" "main" {
   protocol = "HTTP"
   vpc_id   = local.vpc_id
 
+  deregistration_delay = 120
+
   health_check {
     path              = local.health_check_path
     interval          = "5"
@@ -12,6 +14,8 @@ resource "aws_lb_target_group" "main" {
     matcher           = "200,301,302"
 
   }
+
+  depends_on = [aws_lb.main]
 
   tags = local.tags
 }
