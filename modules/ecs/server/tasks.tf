@@ -15,6 +15,8 @@ resource "aws_ecs_task_definition" "server" {
     }
   }
 
+  network_mode = "bridge"
+
   container_definitions = templatefile("${path.module}/tasks/server.tmpl", {
     # Container configuration
     name             = local.name
@@ -28,7 +30,8 @@ resource "aws_ecs_task_definition" "server" {
     container_path   = local.efs_filesystem_mount_path
     database_config  = local.database_config
 
-    mem_opts = local.mem_opts
+    server_opts = local.server_opts
+    mem_opts    = local.mem_opts
 
     data_volume_name = local.data_volume_name
     data_volume_path = local.data_volume_path

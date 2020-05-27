@@ -8,10 +8,11 @@ resource "aws_lb_target_group" "main" {
 
   health_check {
     path              = local.health_check_path
+    port              = local.health_check_port
     interval          = "5"
     timeout           = "3"
     healthy_threshold = "2"
-    matcher           = "200,301,302"
+    matcher           = "200"
 
   }
 

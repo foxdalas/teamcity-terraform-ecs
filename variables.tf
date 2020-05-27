@@ -70,6 +70,24 @@ variable "server_container_memory" {
   type        = number
 }
 
+variable "server_database_name" {
+  description = "TeamCity Server Database name"
+  default     = "teamcity"
+  type        = string
+}
+
+variable "server_database_username" {
+  description = "TeamCity Server Database username"
+  default     = "teamcity"
+  type        = string
+}
+
+variable "server_database_password" {
+  description = "TeamCity Server Database password"
+  default     = "ree3au4aag8ionguas7xai3d"
+  type        = string
+}
+
 variable "server_container_data_dir" {
   description = "TeamCity Data Directory is the directory on the file system used by TeamCity server to store configuration settings, build results and current operation files"
   default     = "/data"
@@ -121,12 +139,16 @@ locals {
   server_container_memory   = var.server_container_memory
   server_container_data_dir = var.server_container_data_dir
 
+  server_database_name     = var.server_database_name
+  server_database_username = var.server_database_username
+  server_database_password = var.server_database_password
 
   agent_container_image  = var.agent_container_image
   agent_container_cpu    = var.agent_container_cpu
   agent_container_memory = var.agent_container_memory
 
-  server_database_config = "connectionUrl=jdbc:hsqldb:file:${var.server_container_data_dir}/buildserver"
+  #server_database_config = "connectionUrl=jdbc:hsqldb:file:${var.server_container_data_dir}/buildserver"
+  server_database_config = "connectionUrl=jdbc:mysql://#{db_address}:3306/#{db_name}\nconnectionProperties.user=#{db_username}\nconnectionProperties.password=#{db_password}\nmaxConnections=50\ntestOnBorrow=true"
 
   tags = merge(
     {

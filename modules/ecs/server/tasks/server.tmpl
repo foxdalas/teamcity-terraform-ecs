@@ -5,9 +5,13 @@
     "command": [
       "/bin/bash",
       "-c",
-      "mkdir -p ${container_path}/system && ln -sf ${cache_volume_path} ${container_path}/system/caches && mkdir -p ${container_path}/config && echo \"${database_config}\" > ${container_path}/config/database.properties && /run-services.sh"
+      "mkdir /opt/teamcity/lib/jdbc && curl -o mysql-connector-java-8.0.19.tar.gz https://cdn.mysql.com/archives/mysql-connector-java-8.0/mysql-connector-java-8.0.19.tar.gz && tar xf mysql-connector-java-8.0.19.tar.gz mysql-connector-java-8.0.19/mysql-connector-java-8.0.19.jar && cp mysql-connector-java-8.0.19/mysql-connector-java-8.0.19.jar /opt/teamcity/lib/jdbc/ && mkdir -p ${container_path}/system && ln -sf ${cache_volume_path} ${container_path}/system/caches && mkdir -p ${container_path}/config && echo \"${database_config}\" > ${container_path}/config/database.properties && /run-services.sh"
     ],
     "environment" : [
+      {
+        "name": "TEAMCITY_SERVER_OPTS",
+        "value": "${server_opts}"
+      },
       {
         "name" : "TEAMCITY_SERVER_MEM_OPTS",
         "value": "${mem_opts}"

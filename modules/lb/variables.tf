@@ -44,6 +44,12 @@ variable "health_check_path" {
   default     = "/"
 }
 
+variable "health_check_port" {
+  description = "Target group health check port"
+  type        = number
+  default     = "80"
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -60,6 +66,7 @@ locals {
   int_web_port       = var.int_web_port
   ext_web_port       = var.ext_web_port
   health_check_path  = var.health_check_path
+  health_check_port  = var.health_check_port
   tags = merge(
     {
       "Name" = format("%s", local.name)

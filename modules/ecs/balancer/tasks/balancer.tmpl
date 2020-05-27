@@ -1,0 +1,29 @@
+[
+  {
+    "name": "${family}",
+    "image": "${image}",
+    "essential": true,
+    "cpu": 100,
+    "memory": 256,
+    "portMappings": [
+      {
+        "hostPort": 8080,
+        "containerPort": 8080,
+        "protocol": "tcp"
+      },
+      {
+        "hostPort": 8081,
+        "containerPort": 8081,
+        "protocol": "tcp"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/ecs/${name}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "${stream_prefix}"
+      }
+    }
+  }
+]

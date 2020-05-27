@@ -4,6 +4,10 @@ variable "name" {
   default     = ""
 }
 
+variable "vpc_id" {
+}
+
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -118,6 +122,12 @@ variable "cache_volume_path" {
   type        = string
 }
 
+variable "server_opts" {
+  description = "TEAMCITY_SERVER_OPTS"
+  default     = ""
+  type        = string
+}
+
 variable "mem_opts" {
   description = "TEAMCITY_SERVER_MEM_OPTS"
   default     = "-Xmx3g -XX:ReservedCodeCacheSize=350m"
@@ -136,11 +146,41 @@ variable "health_check_grace_period_seconds" {
   default     = 120
 }
 
+variable "database_name" {
+  description = "TeamCity Server database name"
+  type        = string
+}
+
+variable "database_address" {
+  description = "TeamCity Server database address"
+  type        = string
+}
+
+variable "database_username" {
+  description = "TeamCity Server database username"
+  type        = string
+}
+
+variable "database_password" {
+  description = "TeamCity Server database password"
+  type        = string
+}
+
+variable "sd_namespace_id" {
+  description = "Service discovery namespace id"
+  type        = string
+}
+
+variable "private_subnets" {
+  type = list
+}
+
 locals {
   name          = var.name
   log_retention = var.log_retention
 
   cluster_name              = var.cluster_name
+  vpc_id                    = var.vpc_id
   service_role_arn          = var.service_role_arn
   task_role_arn             = var.task_role_arn
   efs_filesystem_id         = var.efs_filesystem_id
@@ -153,7 +193,12 @@ locals {
   container_port = var.container_port
   host_port      = var.host_port
 
-  database_config = var.database_config
+  database_name     = var.database_name
+  database_address  = var.database_address
+  database_username = var.database_username
+  database_password = var.database_password
+
+  database_config = "connectionUrl=jdbc:mysql://${local.database_address}:3306/${local.database_name}\\nconnectionProperties.user=${local.database_username}\\nconnectionProperties.password=${local.database_password}\\nmaxConnections=50\\ntestOnBorrow=true"
 
   data_volume_name = var.data_volume_name
   data_volume_path = var.data_volume_path
@@ -161,15 +206,19 @@ locals {
   cache_volume_name = var.cache_volume_name
   cache_volume_path = var.cache_volume_path
 
-  mem_opts = var.mem_opts
+  server_opts = var.server_opts
+  mem_opts    = var.mem_opts
 
   capacity_provider = var.capacity_provider
   lb_target_group   = var.lb_target_group
 
   health_check_grace_period_seconds = var.health_check_grace_period_seconds
 
+  sd_namespace_id = var.sd_namespace_id
 
   plugins_list = var.plugins_list
+
+  private_subnets = var.private_subnets
 
   tags = merge(
     {

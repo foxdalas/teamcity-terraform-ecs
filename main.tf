@@ -56,6 +56,28 @@ module "efs" {
 }
 
 
+module "rds" {
+  source = "./modules/rds"
+
+  name                = "${local.name}-rds"
+  vpc_id              = module.vpc.vpc_id
+  db_subnets          = module.vpc.private_subnets
+  trusted_cidr_blocks = module.vpc.private_subnets_cidr_blocks
+
+  database = local.server_database_name
+  username = local.server_database_username
+  password = local.server_database_password
+}
+
+module "service_discovery" {
+  source = "./modules/service_discovery"
+
+  name   = "${local.name}-sd"
+  vpc_id = module.vpc.vpc_id
+
+  tags = local.tags
+}
+
 module "alb" {
   source = "./modules/lb"
 
@@ -64,9 +86,10 @@ module "alb" {
 
   public_subnets     = module.vpc.public_subnets
   target_cidr_blocks = module.vpc.private_subnets_cidr_blocks
-  int_web_port       = 8111
+  int_web_port       = 8080
   ext_web_port       = 80
-  health_check_path  = "/showAgreement.html" #Official workaround. Realy?
+  health_check_path  = "/healthz"
+  health_check_port  = 8081
 
   tags = local.tags
 }
@@ -89,13 +112,29 @@ module "ecs" {
   tags = local.tags
 }
 
-module "server" {
-  source = "./modules/ecs/server"
+module "balancer" {
+  source = "./modules/ecs/balancer"
 
-  name             = "${local.name}-server"
+  name             = "${local.name}-balancer"
   cluster_name     = local.name
   service_role_arn = module.ecs.ecs_service_role_name
   task_role_arn    = module.ecs.ecs_default_task_role_arn
+
+  capacity_provider = module.ecs.ecs_capacity_provider_name
+  lb_target_group   = module.alb.target_group.arn
+}
+
+
+module "server" {
+  source = "./modules/ecs/server"
+
+  name             = "${local.name}-master"
+  vpc_id           = module.vpc.vpc_id
+  cluster_name     = local.name
+  service_role_arn = module.ecs.ecs_service_role_name
+  task_role_arn    = module.ecs.ecs_default_task_role_arn
+
+  private_subnets = module.vpc.private_subnets
 
   efs_filesystem_id         = module.efs.filesystem_id
   efs_filesystem_mount_path = local.server_container_data_dir
@@ -104,13 +143,52 @@ module "server" {
   container_cpu    = local.server_container_cpu
   container_memory = local.server_container_memory
 
-  database_config = local.server_database_config
+  database_name     = local.server_database_name
+  database_username = local.server_database_username
+  database_password = local.server_database_password
+  database_address  = module.rds.address
 
   capacity_provider = module.ecs.ecs_capacity_provider_name
   lb_target_group   = module.alb.target_group.arn
 
+  sd_namespace_id = module.service_discovery.namespace_id
+
   tags = local.tags
 }
+
+module "readonly" {
+  source = "./modules/ecs/server"
+
+  name             = "${local.name}-readonly"
+  vpc_id           = module.vpc.vpc_id
+  cluster_name     = local.name
+  service_role_arn = module.ecs.ecs_service_role_name
+  task_role_arn    = module.ecs.ecs_default_task_role_arn
+
+  private_subnets = module.vpc.private_subnets
+
+  server_opts = "-Dteamcity.server.nodeId=readonly -Dteamcity.server.rootURL=http://${module.server.master_server_address}"
+
+  efs_filesystem_id         = module.efs.filesystem_id
+  efs_filesystem_mount_path = local.server_container_data_dir
+
+  container_image  = local.server_container_image
+  container_cpu    = local.server_container_cpu
+  container_memory = local.server_container_memory
+
+  database_name     = local.server_database_name
+  database_username = local.server_database_username
+  database_password = local.server_database_password
+  database_address  = module.rds.address
+
+  capacity_provider = module.ecs.ecs_capacity_provider_name
+  lb_target_group   = module.alb.target_group.arn
+
+  sd_namespace_id = module.service_discovery.namespace_id
+
+  tags = local.tags
+}
+
 
 module "agent" {
   source = "./modules/ecs/agent"
